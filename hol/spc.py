@@ -6,7 +6,10 @@ from time import monotonic
 from textual.reactive import reactive
 from rich_pixels import Pixels
 from rich.console import Console
-import pygame
+
+from os import listdir
+from os.path import isfile, join
+import PIL.Image
 
 
 
@@ -15,18 +18,63 @@ class TimeDisplay(Static):
 
 
 class Image(Static):
-    def _on_mount(self) -> None:
-        console = Console()
-        pixels = Pixels.from_image_path("bar.png",(50,50))
-        console.print(pixels)
-        self.update(pixels)
-        #Pixels.from_image_path()
+    global left,hel,im1,xer,yer
+    img = PIL.Image.open(r"C:\Users\eyita\cs\assets\MainCharacters\MaskDude\idle.png")
+    xer,yer=img.size
+    im1 = img.crop((0,0,xer-320,yer-0))
+    pixels =reactive(Pixels.from_image(im1))
+    
+    hol = None
+    
+    left=0
+    
+    hel=320
+    
+    
 
-    # def get_content_width(self, container: Size, viewport: Size) -> int:
-    #     return 50
-    #
-    # def get_content_height(self, container: Size, viewport: Size, width: int) -> int:
-    #     return 50
+    def _on_mount(self) -> None:
+        self.set_interval(120 / 60, self.update_img)
+        print("boi")
+        
+    #     global xer,yer
+    #     self.img = PIL.Image.open(r"C:\Users\eyita\cs\assets\MainCharacters\MaskDude\idle.png")
+    #     xer,yer=self.img.size
+    #     im1 = self.img.crop((0,0,xer-320,yer-0))
+    #     im1.resize((25,25))
+        
+        
+    #     pixels =reactive( Pixels.from_image(im1))
+        
+        
+    #     self.update(pixels)
+        
+    #     self.set_interval(1 / 60, Image.update_img(self))
+
+    #     return pixels
+    
+    def update_img(self)-> None:
+        global xer,left,hel,im1
+        
+        
+        
+        if hel ==0:
+            hel =320
+        if left ==320:
+            left = 0
+        hel -=32
+        left +=32
+        
+        
+        im1 = self.img.crop((left,0,xer-hel,yer-0))
+        #im1.show()
+        #im1.resize((25,25))
+        #pixels =Pixels.from_image(im1)
+        
+    def watch_img(self):
+        self.update(im1)
+        #im1.show()
+        Console().print(self.pixels)
+        print("watch")
 
 
 class Stopwatch(Static):
@@ -55,6 +103,7 @@ class StopwatchApp(App):
     """A Textual app to manage stopwatches."""
     CSS_PATH = "sp.css"
     BINDINGS = [("d", "toggle_dark", "Toggle dark mode"), ("c", "cancel", "Cancel")]
+    
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
