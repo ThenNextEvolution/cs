@@ -7,18 +7,28 @@ from textual.geometry import Size
 from textual.widgets import Button, Header, Footer, Static
 from time import monotonic
 from textual.reactive import reactive
+from textual.widgets import Input
+
+
+class InputApp(Static):
+    def compose(self) -> ComposeResult:
+        yield Input(placeholder="SPRITE IMAGE",id="spr")
+        yield Input(placeholder="NUMBER OF SPRITES IN  ROW", id="num")
+
+    def on_input_submitted(self):
+
 
 
 class draw(Static):
     left = 0
-    img = Image.open("assets/MainCharacters/MaskDude/run.png")
+    img = Image.open("assets/MainCharacters/MaskDude/idle.png")
     x, y = img.size
     hel = 320
     console = Console()
 
     def _on_mount(self) -> None:
         im1 = self.img.crop((self.left, 0, self.x - self.hel, self.y - 0))
-        im1 = im1.resize((25, 25))
+        im1 = im1.resize((5, 5))
         xels = reactive(Pixels.from_image(im1))
         xels = Pixels.from_image(im1)
         self.console.print(xels, end="\r")
@@ -42,7 +52,11 @@ class draw(Static):
 
 class controls(Static):
     url = reactive("assets\MainCharacters\MaskDude\idle.png")
-
+    spritesnum = reactive(32)
+    level = reactive(0)
+    imglen = reactive(352)
+    fps = reactive(6)
+    Input._on_input
 
 class Display(App):
     """A Textual app to manage stopwatches."""
@@ -54,6 +68,7 @@ class Display(App):
         """Create child widgets for the app."""
         yield Header()
         yield Footer()
+        yield InputApp()
         yield Container(draw())
 
     def action_toggle_dark(self) -> None:

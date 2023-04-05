@@ -53,7 +53,7 @@ class Image(Static):
 
     def _on_mount(self) -> None:
         global left,hel,im1,xer,yer
-        img = PIL.Image.open(r"C:\Users\eyita\cs\assets\MainCharacters\MaskDude\idle.png")
+        img = PIL.Image.open(r"assets/MainCharacters/MaskDude/idle.png")
         hel=320
         xer,yer=img.size
         left=0
@@ -142,7 +142,7 @@ class StopwatchApp(App):
         """Create child widgets for the app."""
         yield Header()
         yield Footer()
-        yield Container(Image())
+        yield Container(Image(),Stopwatch())
 
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
