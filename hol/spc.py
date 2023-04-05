@@ -12,6 +12,27 @@ from os.path import isfile, join
 import PIL.Image
 
 
+class Stopwatch(Static):
+    """A stopwatch widget."""
+
+    start_time = reactive(monotonic)
+    time = reactive(0.0)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Event handler called when a button is pressed."""
+        if event.button.id == "start":
+            self.add_class("started")
+        elif event.button.id == "stop":
+            self.remove_class("started")
+
+    def compose(self) -> ComposeResult:
+        """Create child widgets of a stopwatch."""
+        yield Button("Start", id="start", variant="success")
+        yield Button("Stop", id="stop", variant="error")
+        yield Button("Reset", id="reset")
+        yield TimeDisplay("00:00:00.00")
+        yield Image()
+
 
 class TimeDisplay(Static):
     """A widget to display elapsed time."""
@@ -19,22 +40,48 @@ class TimeDisplay(Static):
 
 class Image(Static):
     global left,hel,im1,xer,yer
-    img = PIL.Image.open(r"C:\Users\eyita\cs\assets\MainCharacters\MaskDude\idle.png")
-    xer,yer=img.size
-    im1 = img.crop((0,0,xer-320,yer-0))
-    pixels =reactive(Pixels.from_image(im1))
+    
+   # im1 = img.crop((0,0,xer-320,yer-0))
+   # pixels =reactive(Pixels.from_image(im1))
+   # test = reactive(im1)
     
     hol = None
     
-    left=0
-    
-    hel=320
+   
     
     
 
     def _on_mount(self) -> None:
-        self.set_interval(120 / 60, self.update_img)
+        global left,hel,im1,xer,yer
+        img = PIL.Image.open(r"C:\Users\eyita\cs\assets\MainCharacters\MaskDude\idle.png")
+        hel=320
+        xer,yer=img.size
+        left=0
+        im1 = img.crop((left,0,xer-hel,yer-0))
+       
+        
+        def ups():
+            global left,hel,im1,xer,yer
+            im1 = img.crop((left,0,xer-hel,yer-0))
+            if hel ==0:
+                hel =320
+            if left ==320:
+                left = 0
+            hel -=32
+            left +=32
+            self.update(pixels)
+            #Image.refresh(pixels)
+            Image.auto_refresh
+            #6im1.show()
+            
+        pixels =(Pixels.from_image(im1))
+        
         print("boi")
+        #console().print(pixels)
+        #self.update(pixels) 
+        self.set_interval(60 / 60, ups)
+        
+        
         
     #     global xer,yer
     #     self.img = PIL.Image.open(r"C:\Users\eyita\cs\assets\MainCharacters\MaskDude\idle.png")
@@ -63,9 +110,13 @@ class Image(Static):
             left = 0
         hel -=32
         left +=32
+        console = Console()
+        
+        console.print(pixels)
+        self.update(self.pixels)
         
         
-        im1 = self.img.crop((left,0,xer-hel,yer-0))
+        #im1 = self.img.crop((left,0,xer-hel,yer-0))
         #im1.show()
         #im1.resize((25,25))
         #pixels =Pixels.from_image(im1)
@@ -77,26 +128,8 @@ class Image(Static):
         print("watch")
 
 
-class Stopwatch(Static):
-    """A stopwatch widget."""
 
-    start_time = reactive(monotonic)
-    time = reactive(0.0)
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Event handler called when a button is pressed."""
-        if event.button.id == "start":
-            self.add_class("started")
-        elif event.button.id == "stop":
-            self.remove_class("started")
-
-    def compose(self) -> ComposeResult:
-        """Create child widgets of a stopwatch."""
-        # yield Button("Start", id="start", variant="success")
-        # yield Button("Stop", id="stop", variant="error")
-        # yield Button("Reset", id="reset")
-        # yield TimeDisplay("00:00:00.00")
-        yield Image()
+        
 
 
 class StopwatchApp(App):
@@ -123,3 +156,5 @@ class StopwatchApp(App):
 if __name__ == "__main__":
     app = StopwatchApp()
     app.run()
+    for i in range(100):
+        app.refresh()
