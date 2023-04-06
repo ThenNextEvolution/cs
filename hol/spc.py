@@ -112,7 +112,7 @@ class Image(Static):
         left +=32
         console = Console()
         
-        console.print(pixels)
+        #console.print(pixels)
         self.update(self.pixels)
         
         
